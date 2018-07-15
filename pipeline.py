@@ -18,10 +18,13 @@ def coroutine(func):
 @coroutine
 def grep(pattern):
 	print('looking for %s' % pattern)
-	while True:
-		line = (yield)
-		if pattern in line:
-			print(line)
+	try:
+		while True:
+			line = (yield)
+			if pattern in line:
+				print(line)
+	except GeneratorExit:
+		print("Going away. Goodbye")
 
 file = open('lines.txt')
 lines = follow(file)
@@ -31,4 +34,5 @@ g = grep("match")
 for line in lines:
 	g.send(line)
 
+g.throw(RuntimeError, "You're hosed")
 g.close()
